@@ -7,7 +7,8 @@
 <h1>Events</h1>
 
 <p>
-    <a asp-action="Create">Create</a>
+    
+    <a class="btn btn-primary " asp-controller="Events" asp-action="Create"> Create New Event </a>
 </p>
 <table class="table">
     <thead>
@@ -39,11 +40,10 @@
                 @Html.DisplayFor(modelItem => item.EventDate)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.EventId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EventId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
-            </td>
+         <a class="btn btn-primary btn-sm" asp-controller="Events" asp-action="Edit" asp-route-id="@item.EventId">Edit</a>
+         <a class="btn btn-secondary btn-sm" asp-controller="Events" asp-action="Details" asp-route-id="@item.EventId">Details</a>
+         <a class="btn btn-danger btn-sm" asp-controller="Events" asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
         </tr>
 }
     </tbody>
-</table>
+</table>+

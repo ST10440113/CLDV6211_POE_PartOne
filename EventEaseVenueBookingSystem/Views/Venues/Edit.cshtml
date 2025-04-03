@@ -6,7 +6,7 @@
 
 <h1>Edit Venue</h1>
 
-<h4>Venue</h4>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -34,14 +34,18 @@
                 <span asp-validation-for="imageUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <br />
                 <input type="submit" value="Save" class="btn btn-primary" />
+                <a class="btn btn-primary " asp-controller="Venues" asp-action="Index"> Back to List </a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    
+  
+   
 </div>
 
 @section Scripts {
