@@ -55,15 +55,34 @@ namespace EventEaseVenueBookingSystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("VenueId,VenueName,Location,Capacity")] Venue venue)
-        {
+            {
             if (ModelState.IsValid)
             {
-                _context.Add(venue);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                using (var transaction = await _context.Database.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Venue ON");
+                        _context.Add(venue);
+                        await _context.SaveChangesAsync();
+                        await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.Venue OFF");
+                        await transaction.CommitAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                }
             }
+
+
             return View(venue);
         }
+
+
+               
 
         // GET: Venues/Edit/5
         public async Task<IActionResult> Edit(int? id)

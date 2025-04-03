@@ -73,9 +73,7 @@ namespace EventEaseVenueBookingSystem.Migrations
 
             modelBuilder.Entity("EventEaseVenueBookingSystem.Models.Venue", b =>
                 {
-                    b.Property<int>("VenueId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<int>("VenueId").HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VenueId"));
 
