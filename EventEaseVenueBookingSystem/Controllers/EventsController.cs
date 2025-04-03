@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventEaseVenueBookingSystem.Data;
 using EventEaseVenueBookingSystem.Models;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace EventEaseVenueBookingSystem.Controllers
 {
@@ -54,7 +55,7 @@ namespace EventEaseVenueBookingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventId,EventName,Description,EventDate")] Event @event)
+        public async Task<IActionResult> Create([Bind("EventName,Description,EventDate")] Event @event)
         {
             if (ModelState.IsValid)
             {
@@ -66,12 +67,9 @@ namespace EventEaseVenueBookingSystem.Controllers
         }
 
         // GET: Events/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            
 
             var @event = await _context.Event.FindAsync(id);
             if (@event == null)
@@ -86,7 +84,7 @@ namespace EventEaseVenueBookingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventId,EventName,Description,EventDate")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("EventName,Description,EventDate")] Event @event)
         {
             if (id != @event.EventId)
             {
