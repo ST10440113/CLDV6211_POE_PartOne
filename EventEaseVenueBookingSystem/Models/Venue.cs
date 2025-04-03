@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventEaseVenueBookingSystem.Models
 {
@@ -12,6 +13,8 @@ namespace EventEaseVenueBookingSystem.Models
         public string? Location { get; set; }
 
         public int Capacity { get; set; }
+   
+        [Display(Name = "Image URL")] public required string imageUrl { get; set; }
 
 
 

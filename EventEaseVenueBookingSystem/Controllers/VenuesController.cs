@@ -55,7 +55,7 @@ namespace EventEaseVenueBookingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VenueId,VenueName,Location,Capacity")] Venue venue)
+        public async Task<IActionResult> Create([Bind("imageUrl,VenueId,VenueName,Location,Capacity")] Venue venue)
             {
             if (ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ namespace EventEaseVenueBookingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VenueId,VenueName,Location,Capacity")] Venue venue)
+        public async Task<IActionResult> Edit(int id, [Bind("imageUrl,VenueId,VenueName,Location,Capacity")] Venue venue)
         {
             if (id != venue.VenueId)
             {
