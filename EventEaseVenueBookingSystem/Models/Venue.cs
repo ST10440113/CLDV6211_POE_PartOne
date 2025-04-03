@@ -14,7 +14,7 @@ namespace EventEaseVenueBookingSystem.Models
 
         public int Capacity { get; set; }
    
-        [Display(Name = "Image URL")] public required string imageUrl { get; set; }
+        [Display(Name = "Venue Image")] public required string imageUrl { get; set; }
 
 
 

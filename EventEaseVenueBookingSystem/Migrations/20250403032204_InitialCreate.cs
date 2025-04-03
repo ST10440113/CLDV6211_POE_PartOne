@@ -30,7 +30,7 @@ namespace EventEaseVenueBookingSystem.Migrations
                 name: "Venue",
                 columns: table => new
                 {
-                    VenueId = table.Column<int>(type: "int", nullable: false),
+                    VenueId = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
                     VenueName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Capacity = table.Column<int>(type: "int", nullable: false)
