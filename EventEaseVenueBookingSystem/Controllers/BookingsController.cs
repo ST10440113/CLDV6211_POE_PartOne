@@ -19,15 +19,44 @@ namespace EventEaseVenueBookingSystem.Controllers
             _context = context;
         }
 
-        // GET: Bookings
-        public async Task<IActionResult> Index()
+        public void PopulateEventList()
         {
-            var eventEaseVenueBookingSystemContext = _context.Booking.Include(b => b.Event).Include(b => b.Venue);
-            return View(await eventEaseVenueBookingSystemContext.ToListAsync());
+            IEnumerable<SelectListItem> eventList = _context.Event.Select(e => new SelectListItem
+            {
+                Text = e.EventName,
+                Value = e.EventId.ToString(),
+
+            });
+            ViewBag.EventList = eventList;
+
         }
 
-        // GET: Bookings/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+        public void PopulateVenueList()
+        {
+            IEnumerable<SelectListItem> venueList = _context.Venue.Select(e => new SelectListItem
+            {
+                Text = e.VenueName,
+                Value = e.VenueId.ToString(),
+
+            });
+            ViewBag.VenueList = venueList;
+
+        }
+
+        // GET: Bookings
+        public async Task<IActionResult> Index(){
+        var bookingList = _context.Booking.ToList();  
+             foreach (var booking in bookingList)
+             {
+                 booking.Event = _context.Event.FirstOrDefault(e => e.EventId == booking.EventId);
+                 booking.Venue = _context.Venue.FirstOrDefault(v => v.VenueId == booking.VenueId);
+             }   
+             return View(await _context.Booking.ToListAsync());
+}
+
+// GET: Bookings/Details/5
+public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -49,8 +78,8 @@ namespace EventEaseVenueBookingSystem.Controllers
         // GET: Bookings/Create
         public IActionResult Create()
         {
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventId");
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueId");
+            PopulateEventList();
+            PopulateVenueList();
             return View();
         }
 
@@ -75,18 +104,11 @@ namespace EventEaseVenueBookingSystem.Controllers
         // GET: Bookings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+            PopulateEventList();
+            PopulateVenueList();
             var booking = await _context.Booking.FindAsync(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventId", booking.EventId);
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueId", booking.VenueId);
+
+            
             return View(booking);
         }
 

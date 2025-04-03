@@ -22,6 +22,7 @@ namespace EventEaseVenueBookingSystem.Controllers
         // GET: Venues
         public async Task<IActionResult> Index()
         {
+            var venueList = _context.Venue.ToList();
             return View(await _context.Venue.ToListAsync());
         }
 
