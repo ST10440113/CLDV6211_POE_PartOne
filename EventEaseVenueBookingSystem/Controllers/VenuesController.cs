@@ -159,12 +159,20 @@ namespace EventEaseVenueBookingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var venue = await _context.Venue.FindAsync(id);
-            if (venue != null)
+            bool isBookingExists = await _context.Booking.AnyAsync(b => b.VenueId == id);
+
+
+            // Check if there are any bookings associated with the event
+            if (isBookingExists)
             {
-                _context.Venue.Remove(venue);
+                var @venue = await _context.Venue.FindAsync(id);
+                ModelState.AddModelError("", "Cannot delete venue as it has associated bookings.");
+                return View(@venue);
             }
 
+            var venueToDelete = await _context.Venue.FindAsync(id);
+
+            _context.Venue.Remove(venueToDelete);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
