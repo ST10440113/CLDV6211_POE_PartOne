@@ -21,10 +21,22 @@ namespace EventEaseVenueBookingSystem.Controllers
         }
 
         // GET: Events
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            var eventList = _context.Event.ToList();
-            return View(await _context.Event.ToListAsync());
+            if (_context.Event == null)
+            {
+                return Problem("Entity set 'EventEaseTestAppContext.'  is null.");
+            }
+
+            var events = from m in _context.Event
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                events = events.Where(s => s.EventName!.ToUpper().Contains(searchString.ToUpper()));
+            }
+
+            return View(await events.ToListAsync());
         }
 
         // GET: Events/Details/5
