@@ -19,6 +19,9 @@ namespace EventEaseVenueBookingSystem.Models
         public DateTime EventDate { get; set; }
 
 
+        [Display(Name = "Event Time")]
+        [DataType(DataType.Time)]
+        public DateTime EventTime { get; set; }
 
 
     }

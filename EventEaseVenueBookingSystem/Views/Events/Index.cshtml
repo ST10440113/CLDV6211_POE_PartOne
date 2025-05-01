@@ -26,6 +26,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.EventDate)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventTime)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -42,6 +45,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.EventDate)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventTime)
+                </td>
             <td>
          <a class="btn btn-primary btn-sm" asp-controller="Events" asp-action="Edit" asp-route-id="@item.EventId">Edit</a>
          <a class="btn btn-secondary btn-sm" asp-controller="Events" asp-action="Details" asp-route-id="@item.EventId">Details</a>
@@ -49,4 +55,4 @@
         </tr>
 }
     </tbody>
-</table>+
+</table>
