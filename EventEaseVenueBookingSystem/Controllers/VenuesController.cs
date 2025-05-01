@@ -20,10 +20,26 @@ namespace EventEaseVenueBookingSystem.Controllers
         }
 
         // GET: Venues
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Venue.ToListAsync());
+
+            if (_context.Venue == null)
+            {
+                return Problem("Entity set 'EventEaseTestAppContext.'  is null.");
+            }
+
+            var venues = from m in _context.Venue
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                venues = venues.Where(s => s.VenueName!.ToUpper().Contains(searchString.ToUpper()));
+            }
+
+
+            return View(await venues.ToListAsync());
         }
+
 
         // GET: Venues/Details/5
         public async Task<IActionResult> Details(int? id)

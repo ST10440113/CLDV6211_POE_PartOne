@@ -10,7 +10,14 @@
     <a class="btn btn-primary " asp-controller="Venues" asp-action="Create"> Create New Venue </a> 
     
 </p>
-
+<p>
+    <form asp-controller="Venues" asp-action="Index">
+        <label>
+            Venue Name: <input type="text" name="SearchString" />
+        </label>
+        <input type="submit" value="Filter" />
+    </form>
+</p>
 
 <table class="table">
     <thead>

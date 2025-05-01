@@ -10,7 +10,14 @@
     
     <a class="btn btn-primary " asp-controller="Events" asp-action="Create"> Create New Event </a>
 </p>
-
+<p>
+    <form asp-controller="Events" asp-action="Index">
+        <label>
+            Event Name: <input type="text" name="SearchString" />
+        </label>
+        <input type="submit" value="Filter" />
+    </form>
+</p>
 
 
 <table class="table">
