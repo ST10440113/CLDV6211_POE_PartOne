@@ -105,17 +105,36 @@ namespace EventEaseVenueBookingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookingId,EventId,VenueId,BookingDate")] Booking booking)
         {
+            var @event = await _context.Event.FindAsync(booking.EventId);
+            var @venue = await _context.Venue.FindAsync(booking.VenueId);
+
+
+            bool checkForDuplicate = await _context.Booking.AnyAsync(i => i.Event.EventDate.Equals(@event.EventDate) &&
+            i.Venue.VenueName.Equals(@venue.VenueName));
+
+
+            if (checkForDuplicate == true)
+            {
+                ModelState.AddModelError(nameof(Event.EventId), "There is an existing booking with the same venue and date of event.");
+
+                PopulateEventList();
+                PopulateVenueList();
+
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventId", booking.EventId);
             ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueId", booking.VenueId);
+
+
+
             return View(booking);
         }
-
         // GET: Bookings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
