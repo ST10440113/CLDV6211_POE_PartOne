@@ -7,16 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventEaseVenueBookingSystem.Data;
 using EventEaseVenueBookingSystem.Models;
+using System.Net;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace EventEaseVenueBookingSystem.Controllers
 {
     public class VenuesController : Controller
     {
         private readonly EventEaseVenueBookingSystemContext _context;
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly string _containerName = "catoos";
 
-        public VenuesController(EventEaseVenueBookingSystemContext context)
+        public VenuesController(EventEaseVenueBookingSystemContext context, IConfiguration config)
         {
             _context = context;
+            _blobServiceClient = new BlobServiceClient(config["BlobStorage:ConnectionString"]);
+            _containerName = config["BlobStorage:ContainerName"];
         }
 
         // GET: Venues
@@ -62,6 +69,7 @@ namespace EventEaseVenueBookingSystem.Controllers
         // GET: Venues/Create
         public IActionResult Create()
         {
+
             return View();
         }
 
@@ -70,23 +78,29 @@ namespace EventEaseVenueBookingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("imageUrl,VenueName,Location,Capacity")] Venue venue)
-            {
-            if (ModelState.IsValid)
-            {
-                _context.Add(venue);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-               
-                
-            }
+        public async Task<IActionResult> Create([Bind("imageUrl,VenueName,Location,Capacity")] IFormFile image, Venue venue)
+        {
+
+            if (image == null && image.Length > 0) return BadRequest("Image file is required.");
+
+            var container = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var blob = container.GetBlobClient(image.FileName);
+
+            using var stream = image.OpenReadStream();
+            await blob.UploadAsync(stream, overwrite: true);
 
 
-            return View(venue);
+            venue.imageUrl = blob.Uri.ToString();
+            _context.Add(venue);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
 
-               
+
+
+
+
 
         // GET: Venues/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -109,7 +123,8 @@ namespace EventEaseVenueBookingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("imageUrl,VenueId,VenueName,Location,Capacity")] Venue venue)
+
+        public async Task<IActionResult> Edit(int id, [Bind("imageUrl,VenueId,VenueName,Location,Capacity")] Venue venue, IFormFile image)
         {
             if (id != venue.VenueId)
             {
@@ -120,8 +135,31 @@ namespace EventEaseVenueBookingSystem.Controllers
             {
                 try
                 {
+                    if (image != null && image.Length > 0)
+                    {
+                        var container = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+                        // Delete the old image blob if it exists
+                        if (!string.IsNullOrEmpty(venue.imageUrl))
+                        {
+                            var blobUri = new Uri(venue.imageUrl);
+                            var blobName = WebUtility.UrlDecode(blobUri.Segments.Last());
+                            var blobToDelete = container.GetBlobClient(blobName);
+                            await blobToDelete.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+                        }
+
+                        // Upload the new image blob
+                        var blob = container.GetBlobClient(image.FileName);
+                        using var stream = image.OpenReadStream();
+                        await blob.UploadAsync(stream, overwrite: true);
+
+                        venue.imageUrl = blob.Uri.ToString();
+                    }
+
+
                     _context.Update(venue);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -134,10 +172,34 @@ namespace EventEaseVenueBookingSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(venue);
         }
+        //if (image == null && image.Length > 0) return BadRequest("Image file is required.");
+
+        //var container = _blobServiceClient.GetBlobContainerClient(_containerName);
+        //var blob = container.GetBlobClient(image.FileName);
+
+        //// Delete the old image blob if it exists
+        //var blobUri = new Uri(venue.imageUrl);
+        //var blobName = WebUtility.UrlDecode(blobUri.Segments.Last());
+        //var blobToDelete = container.GetBlobClient(blobName);
+        //await blobToDelete.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+
+
+        //// Upload the new image blob
+        // using var stream = image.OpenReadStream();
+        //await blob.UploadAsync(stream, overwrite: true);
+
+
+        //venue.imageUrl = blob.Uri.ToString();
+        //_context.Update(venue);
+        //await _context.SaveChangesAsync();
+        //return RedirectToAction(nameof(Index));
+
+
+
 
         // GET: Venues/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -154,6 +216,12 @@ namespace EventEaseVenueBookingSystem.Controllers
                 return NotFound();
             }
 
+            var container = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+            var blobUri = new Uri(venue.imageUrl);
+            var blobName = WebUtility.UrlDecode(blobUri.Segments.Last());
+            var blob = container.GetBlobClient(blobName);
+
             return View(venue);
         }
 
@@ -165,7 +233,7 @@ namespace EventEaseVenueBookingSystem.Controllers
             bool isBookingExists = await _context.Booking.AnyAsync(b => b.VenueId == id);
 
 
-            // Check if there are any bookings associated with the event
+            // Check if there are any bookings associated with the venue
             if (isBookingExists)
             {
                 var @venue = await _context.Venue.FindAsync(id);
@@ -173,12 +241,21 @@ namespace EventEaseVenueBookingSystem.Controllers
                 return View(@venue);
             }
 
+
             var venueToDelete = await _context.Venue.FindAsync(id);
 
+            var container = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+            var blobUri = new Uri(venueToDelete.imageUrl);
+            var blobName = WebUtility.UrlDecode(blobUri.Segments.Last());
+            var blob = container.GetBlobClient(blobName);
+
             _context.Venue.Remove(venueToDelete);
+            await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool VenueExists(int id)
         {
