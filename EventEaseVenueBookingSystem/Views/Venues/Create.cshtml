@@ -10,9 +10,9 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="p-3">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
+
             <div class="form-group">
                 <label asp-for="VenueName" class="control-label"></label>
                 <input asp-for="VenueName" class="form-control" />
@@ -28,24 +28,39 @@
                 <input asp-for="Capacity" class="form-control" />
                 <span asp-validation-for="Capacity" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" method="post" enctype="multipart/form-data">
+
                 <label asp-for="imageUrl" class="control-label"></label>
-                <input asp-for="imageUrl" class="form-control" />
+                <input asp-for="imageUrl" input type="file" name="image" accept="image/*" required />
                 <span asp-validation-for="imageUrl" class="text-danger"></span>
+
+
+
+                @if (ViewBag.Url != null)
+                {
+                    <img src="@ViewBag.Url" style="max-width: 300px" />
+                    <p>URL: <a href="@ViewBag.Url">@ViewBag.Url</a></p>
+                }
             </div>
+
             <div class="form-group">
-                <br/>
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <br />
+                <button type="submit" class="btn btn-primary">Create</button>
                 <a class="btn btn-primary " asp-controller="Venues" asp-action="Index"> Back to List </a>
             </div>
+
+
         </form>
     </div>
 </div>
 
 <div>
-   
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+
