@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EventEaseVenueBookingSystem.Models.Venue>
+﻿@model IEnumerable<EventEaseTestApp.Models.Venue>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,8 +7,8 @@
 <h1>Venues</h1>
 
 <p>
-    <a class="btn btn-primary " asp-controller="Venues" asp-action="Create"> Create New Venue </a> 
-    
+    <a class="btn btn-primary " asp-controller="Venues" asp-action="Create"> Create New Venue </a>
+
 </p>
 <p>
     <form asp-controller="Venues" asp-action="Index">
@@ -18,55 +18,37 @@
         <input type="submit" value="Filter" />
     </form>
 </p>
+<div class="container mt-3">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.VenueName</h5>
+                        <p class="card-text">Location: @item.Location</p>
+                        <p class="card-text">Capacity: @item.Capacity</p>
+                        @if (!string.IsNullOrEmpty(item.imageUrl))
+                        {
+                            <img src="@item.imageUrl" alt="Venue Image" style="width:100%;height:auto;" />
+                        }
+                        else
+                        {
+                            <p>No image available</p>
+                        }
+                        <br>
+                        <br>
+                        <a class="btn btn-primary" asp-controller="Venues" asp-action="Edit" asp-route-id="@item.VenueId">Edit</a>
+                        <a class="btn btn-secondary" asp-controller="Venues" asp-action="Details" asp-route-id="@item.VenueId">Details</a>
+                        <a class="btn btn-danger" asp-controller="Venues" asp-action="Delete" asp-route-id="@item.VenueId">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            
-            <th>
-                @Html.DisplayNameFor(model => model.VenueName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Capacity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.imageUrl)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-                
-            <td>
-                @Html.DisplayFor(modelItem => item.VenueName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacity)
-            </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.imageUrl))
-                    {
-                        <img src="@item.imageUrl" alt="Venue Image" style="width:110px;height:110px;" />
-                    }
-                    else
-                    {
-                        <p>No image available</p>
-                    }
-                </td>
-            <td>
-                <a class="btn btn-primary btn-sm" asp-controller="Venues" asp-action="Edit" asp-route-id="@item.VenueId">Edit</a> 
-                    <a class="btn btn-secondary btn-sm" asp-controller="Venues" asp-action="Details" asp-route-id="@item.VenueId">Details</a> 
-                    <a class="btn btn-danger btn-sm" asp-controller="Venues" asp-action="Delete" asp-route-id="@item.VenueId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+
+
+
