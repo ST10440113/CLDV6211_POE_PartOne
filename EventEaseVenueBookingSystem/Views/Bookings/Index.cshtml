@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<EventEaseVenueBookingSystem.Models.Booking>
 
+
 @{
     ViewData["Title"] = "Index";
 }
@@ -7,51 +8,38 @@
 <h1>Bookings</h1>
 
 <p>
-   
+
     <a class="btn btn-primary " asp-controller="Bookings" asp-action="Create"> Create New Booking </a>
 </p>
 
 <p>
     <form asp-controller="Bookings" asp-action="Index">
         <label>
-            Booked Event: <input type="text" name="SearchString" />
+            Name of Booked Event: <input type="text" name="SearchString" />
         </label>
         <input type="submit" value="Filter" />
     </form>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Event.EventName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Venue.VenueName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BookingDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Event.EventName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Venue.VenueName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BookingDate)
-            </td>
-            <td>
-                    <a class="btn btn-primary btn-sm" asp-controller="Bookings" asp-action="Edit" asp-route-id="@item.BookingId">Edit</a>
-                    <a class="btn btn-secondary btn-sm" asp-controller="Bookings" asp-action="Details" asp-route-id="@item.BookingId">Details</a>
-                    <a class="btn btn-danger btn-sm" asp-controller="Bookings" asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-3">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Event.EventName</h5>
+                        <p class="card-text">Venue Name: @item.Venue.VenueName</p>
+                        <p class="card-text">Event Date: @item.Event.EventDate</p>
+                        <p class="card-text">Event Time: @item.Event.EventTime</p>
+
+                        <br>
+                        <br>
+                        <a class="btn btn-primary" asp-controller="Bookings" asp-action="Edit" asp-route-id="@item.BookingId">Edit</a>
+                        <a class="btn btn-secondary" asp-controller="Bookings" asp-action="Details" asp-route-id="@item.BookingId">Details</a>
+                        <a class="btn btn-danger" asp-controller="Bookings" asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
